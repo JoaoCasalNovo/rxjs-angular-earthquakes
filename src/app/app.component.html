@@ -1,7 +1,11 @@
 <div class="earthquake-viewer-page">
     <section class="header">
-        <div class="label">Earthquake Viewer</div>
-        <div class="tabs"></div>
+        <div class="left-side">
+            <div class="label">Earthquake Viewer</div>
+        </div>
+        <div class="right-side">
+            <tabs [items]="tabsList"></tabs>
+        </div>
     </section>
     <section class="map-visualiser"></section>
 </div>
