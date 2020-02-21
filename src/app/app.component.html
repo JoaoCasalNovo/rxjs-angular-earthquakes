@@ -12,7 +12,6 @@
         </div>
     </div>
     <div class="visualiser">
-        <earthquake-map *ngIf="mapSelected"></earthquake-map>
-        <tryout *ngIf="!mapSelected"></tryout>
+        <router-outlet></router-outlet>
     </div>
 </div>

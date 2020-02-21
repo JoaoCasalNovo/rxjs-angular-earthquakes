@@ -4,8 +4,6 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TabsModule } from './tabs/tabs.module';
-import { EarthquakeMapModule } from './earthquake-map/earthquake-map.module';
-import { TryoutModule } from './tryout/tryout.module';
 
 @NgModule({
 	declarations: [
@@ -14,9 +12,7 @@ import { TryoutModule } from './tryout/tryout.module';
 	imports: [
 		BrowserModule,
 		AppRoutingModule,
-		TabsModule,
-		EarthquakeMapModule,
-		TryoutModule
+		TabsModule
 	],
 	providers: [],
 	bootstrap: [AppComponent]
