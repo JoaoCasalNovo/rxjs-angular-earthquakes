@@ -6,6 +6,7 @@ import { EarthquakeMapComponent } from './earthquake-map.component';
 	imports: [
 		CommonModule
 	],
+	exports: [EarthquakeMapComponent],
 	declarations: [EarthquakeMapComponent]
 })
 export class EarthquakeMapModule { }

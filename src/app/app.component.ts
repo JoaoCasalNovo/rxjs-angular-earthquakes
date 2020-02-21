@@ -7,6 +7,18 @@ import { ITab } from './tabs/tabs.component';
 	styleUrls: ['./app.component.less']
 })
 export class AppComponent {
+	mapSelected = false;
+
+	viewTabs: ITab[] = [
+		{
+			label: 'Try Out',
+			onClickAction: () => this.mapSelected = false
+		},
+		{
+			label: 'Earthquakes Map',
+			onClickAction: () => this.mapSelected = true
+		}
+	];
 
 	tabsList: ITab[] = [
 		{
