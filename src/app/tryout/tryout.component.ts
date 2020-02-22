@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
-import { share, filter, map } from 'rxjs/operators';
+import { share, filter, map, debounceTime } from 'rxjs/operators';
 
 const HEADER_HEIGHT = 60;
 
@@ -70,18 +70,19 @@ export class TryoutComponent implements OnInit, OnDestroy {
 		// 	.subscribe(() => console.log('BOTTOM RIGHT CORNER'));
 
 		// #### MAP
-		// this.click$
-		// 	.pipe(
-		// 		map((event: MouseEvent) => {
-		// 			const zone = '';
+		this.click$
+			.pipe(
+				debounceTime(300),
+				map((event: MouseEvent) => {
+					const zone = '';
 
-		// 			return zone
-		// 				.concat(event.clientY > this.centerHeigth ? 'BOTTOM' : 'TOP')
-		// 				.concat(event.clientX > this.centerWidth ? ' RIGHT' : ' LEFT');
-		// 		})
-		// 	).subscribe((zone: string) => {
-		// 		console.log(`The Event Zone is ${zone}`);
-		// 	});
+					return zone
+						.concat(event.clientY > this.centerHeigth ? 'BOTTOM' : 'TOP')
+						.concat(event.clientX > this.centerWidth ? ' RIGHT' : ' LEFT');
+				})
+			).subscribe((zone: string) => {
+				console.log(`The Event Zone is ${zone}`);
+			});
 	}
 
 	ngOnDestroy() {
