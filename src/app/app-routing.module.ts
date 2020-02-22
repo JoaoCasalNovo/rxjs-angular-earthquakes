@@ -10,7 +10,7 @@ const routes: Routes = [
 				loadChildren: () => import('./tryout/tryout.module').then(m => m.TryoutModule)
 			},
 			{
-				path: 'map',
+				path: 'earthquake-map',
 				loadChildren: () => import('./earthquake-map/earthquake-map.module').then(m => m.EarthquakeMapModule)
 			},
 			{

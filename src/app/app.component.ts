@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ITab } from './tabs/tabs.component';
+import { Router } from '@angular/router';
+import { CONTINENTS, DEFAULT_CONTINENT } from './config/map.config';
 
 @Component({
 	selector: 'app-root',
@@ -12,46 +14,36 @@ export class AppComponent {
 	viewTabs: ITab[] = [
 		{
 			label: 'Try Out',
-			onClickAction: () => this.mapSelected = false
+			onClickAction: () => {
+				this.router.navigate(['/try-out']);
+				this.mapSelected = false;
+			}
 		},
 		{
 			label: 'Earthquakes Map',
-			onClickAction: () => this.mapSelected = true
+			onClickAction: () => {
+				this.navigateTo(DEFAULT_CONTINENT);
+				this.mapSelected = true;
+			}
 		}
 	];
 
-	tabsList: ITab[] = [
-		{
-			label: 'North America',
-			onClickAction: () => this.navigateTo('North America')
-		},
-		{
-			label: 'Central America',
-			onClickAction: () => this.navigateTo('Central America')
-		},
-		{
-			label: 'South America',
-			onClickAction: () => this.navigateTo('South America')
-		},
-		{
-			label: 'Europe',
-			onClickAction: () => this.navigateTo('Europe')
-		},
-		{
-			label: 'Asia',
-			onClickAction: () => this.navigateTo('Asia')
-		},
-		{
-			label: 'Africa',
-			onClickAction: () => this.navigateTo('Africa')
-		},
-		{
-			label: 'Oceania',
-			onClickAction: () => this.navigateTo('Oceania')
-		}
-	];
+	tabsList: ITab[] = this.initContinentsTab();
+
+	constructor(private router: Router) { }
+
+	initContinentsTab(): ITab[] {
+		return Object.keys(CONTINENTS).map(keyContinent => ({
+			label: CONTINENTS[keyContinent],
+			onClickAction: () => this.navigateTo(keyContinent)
+		}));
+	}
 
 	navigateTo(continent: string) {
-		console.log(continent);
+		this.router.navigate(['/earthquake-map'], {
+			queryParams: {
+				continent
+			}
+		});
 	}
 }

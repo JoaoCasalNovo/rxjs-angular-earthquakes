@@ -1,14 +1,13 @@
 <div class="earthquake-viewer-page">
     <div class="header">
         <div class="left-side">
-            <div class="label">RxJs Viewer</div>
+            <div class="label">RxJs on Quakes</div>
             <tabs [items]="viewTabs"></tabs>
         </div>
-        <div class="right-side">
-            <tabs
-                *ngIf="mapSelected"
-                [items]="tabsList">
-            </tabs>
+        <div
+            class="right-side"
+            *ngIf="mapSelected">
+            <tabs [items]="tabsList"></tabs>
         </div>
     </div>
     <div class="visualiser">
