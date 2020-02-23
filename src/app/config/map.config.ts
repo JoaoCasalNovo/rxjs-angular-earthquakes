@@ -4,6 +4,13 @@ export interface GeoPoint {
 	center?: number;
 }
 
+export interface Quake extends GeoPoint {
+	size: number;
+	place: string;
+	type: string;
+	time: string;
+}
+
 export interface ContinentGeoPoint {
 	[key: string]: GeoPoint;
 }
@@ -28,4 +35,12 @@ export const CONTINENTS_CENTER_POINT: ContinentGeoPoint = {
 	Oceania: { lat: 0.263671, lng: 97.680817, center: 3 }
 };
 
+export const PERIODS = {
+	all_hour: 'Past Hour',
+	all_day: 'Past Day',
+	all_week: 'Past 7 Days',
+	all_month: 'Past 30 Days'
+}
+
 export const DEFAULT_CONTINENT = 'NorthAmerica';
+export const DEFAULT_PERIOD = 'all_day';

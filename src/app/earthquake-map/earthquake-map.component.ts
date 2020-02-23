@@ -1,7 +1,8 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CONTINENTS_CENTER_POINT, DEFAULT_CONTINENT } from '../config/map.config';
+import { CONTINENTS_CENTER_POINT, DEFAULT_CONTINENT, Quake, PERIODS, DEFAULT_PERIOD } from '../config/map.config';
 import * as L from 'leaflet';
+import { QuakeService } from '../services/quake.service';
 
 @Component({
 	selector: 'earthquake-map',
@@ -9,13 +10,20 @@ import * as L from 'leaflet';
 	styleUrls: ['./earthquake-map.component.less']
 })
 export class EarthquakeMapComponent implements AfterViewInit {
-	map: L.Map;
+	periods = PERIODS;
+	selectedPeriod = DEFAULT_PERIOD;
 
-	constructor(private route: ActivatedRoute) { }
+	map: L.Map;
+	layerGroup;
+
+	constructor(private route: ActivatedRoute, private quakeService: QuakeService) { }
 
 	ngAfterViewInit(): void {
 		this.initMap();
 		this.subscribeContinentChanges();
+		this.subscribeQuakeService();
+
+		this.quakeService.load();
 	}
 
 	initMap() {
@@ -23,8 +31,13 @@ export class EarthquakeMapComponent implements AfterViewInit {
 
 		const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
 		tiles.addTo(this.map);
+
+		this.layerGroup = L.layerGroup();
+		this.layerGroup.addTo(this.map);
+		this.layerGroup.on('click', this.onCircleClick);
 	}
 
+	// EXERCICIO
 	subscribeContinentChanges() {
 		this.route.queryParams
 			.subscribe((params: Params) => {
@@ -32,5 +45,33 @@ export class EarthquakeMapComponent implements AfterViewInit {
 				const coord = CONTINENTS_CENTER_POINT[continentKey];
 				this.map.setView(new L.LatLng(coord.lat, coord.lng), coord.center);
 			});
+	}
+
+	// EXERCICIO
+	subscribeQuakeService() {
+		this.quakeService.quakes
+			.subscribe((quakes: Quake[]) => {
+				console.log(quakes);
+
+				quakes.forEach(quake => this.addCircle(quake));
+			});
+	}
+
+	addCircle(quake: Quake) {
+		const circle = L.circle([quake.lat, quake.lng], quake.size);
+		circle.on('click', this.onCircleClick);
+		circle.addTo(this.layerGroup);
+	}
+
+	onPeriodChanged(period: string) {
+		this.layerGroup.clearLayers();
+		console.log(period);
+		this.selectedPeriod = period;
+		this.quakeService.load(period);
+		console.log(this.map);
+	}
+
+	onCircleClick(ev) {
+		console.log('asdasdasdas', ev);
 	}
 }
