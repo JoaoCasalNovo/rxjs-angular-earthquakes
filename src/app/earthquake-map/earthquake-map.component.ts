@@ -65,10 +65,8 @@ export class EarthquakeMapComponent implements AfterViewInit {
 
 	onPeriodChanged(period: string) {
 		this.layerGroup.clearLayers();
-		console.log(period);
 		this.selectedPeriod = period;
 		this.quakeService.load(period);
-		console.log(this.map);
 	}
 
 	onCircleClick(ev) {
