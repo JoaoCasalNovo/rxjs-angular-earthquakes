@@ -31,7 +31,7 @@ export const CONTINENTS_CENTER_POINT: ContinentGeoPoint = {
 	SouthAmerica: { lat: -20.118480, lng: -59.414749, center: 3 },
 	Europe: { lat: 54.5260, lng: 15.2551, center: 3 },
 	Asia: { lat: 31.684355, lng: 77.404861, center: 4 },
-	Africa: { lat: 8.7832, lng: 34.5085, center: 3 },
+	Africa: { lat: 8.7832, lng: 34.5085, center: 4 },
 	Oceania: { lat: 0.263671, lng: 97.680817, center: 3 }
 };
 

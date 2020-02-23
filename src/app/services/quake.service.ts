@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Quake, DEFAULT_PERIOD } from '../config/map.config';
-import { BehaviorSubject, from, zip, forkJoin, of } from 'rxjs';
+import { BehaviorSubject, from, zip, forkJoin, of, Subject } from 'rxjs';
 import { flatMap, map, merge, combineAll, mergeAll } from 'rxjs/operators';
 
 @Injectable()
 export class QuakeService {
 	private baseUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/';
 
-	private quakes$ = new BehaviorSubject<Quake[]>([]);
+	private quakes$ = new Subject<Quake[]>();
 	private dataStore: { quakes: Quake[] } = { quakes: [] };
 
 	get quakes() {
@@ -26,11 +26,11 @@ export class QuakeService {
 				map((quake: any) => ({
 					lat: quake.geometry.coordinates[1],
 					lng: quake.geometry.coordinates[0],
-					size: quake.properties.mag * 10000,
+					size: quake.properties.mag * 20000,
 					place: quake.properties.place,
 					type: quake.properties.type,
 					time: quake.properties.time
-				} as Quake)),
+				} as Quake))
 			)
 			.subscribe(
 				quake => {
@@ -42,5 +42,4 @@ export class QuakeService {
 				}
 			);
 	}
-
 }

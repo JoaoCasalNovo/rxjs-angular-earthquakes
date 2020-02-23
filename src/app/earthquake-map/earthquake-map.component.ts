@@ -1,8 +1,10 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CONTINENTS_CENTER_POINT, DEFAULT_CONTINENT, Quake, PERIODS, DEFAULT_PERIOD } from '../config/map.config';
+import { CONTINENTS_CENTER_POINT, DEFAULT_CONTINENT, Quake, PERIODS, DEFAULT_PERIOD, GeoPoint } from '../config/map.config';
 import * as L from 'leaflet';
 import { QuakeService } from '../services/quake.service';
+import { fromEvent, Observable, from } from 'rxjs';
+import { share, map, filter, flatMap } from 'rxjs/operators';
 
 @Component({
 	selector: 'earthquake-map',
@@ -16,14 +18,18 @@ export class EarthquakeMapComponent implements AfterViewInit {
 	map: L.Map;
 	layerGroup;
 
+	quakes: Quake[];
+
+	mousemove$: Observable<GeoPoint>;
+	popup$;
+
 	constructor(private route: ActivatedRoute, private quakeService: QuakeService) { }
 
 	ngAfterViewInit(): void {
 		this.initMap();
 		this.subscribeContinentChanges();
 		this.subscribeQuakeService();
-
-		this.quakeService.load();
+		this.subscribePopup();
 	}
 
 	initMap() {
@@ -34,7 +40,6 @@ export class EarthquakeMapComponent implements AfterViewInit {
 
 		this.layerGroup = L.layerGroup();
 		this.layerGroup.addTo(this.map);
-		this.layerGroup.on('click', this.onCircleClick);
 	}
 
 	// EXERCICIO
@@ -51,16 +56,33 @@ export class EarthquakeMapComponent implements AfterViewInit {
 	subscribeQuakeService() {
 		this.quakeService.quakes
 			.subscribe((quakes: Quake[]) => {
-				console.log(quakes);
-
+				this.quakes = quakes;
 				quakes.forEach(quake => this.addCircle(quake));
 			});
+
+		this.quakeService.load();
+	}
+
+	// EXERCICIO
+	subscribePopup() {
+		this.mousemove$ = fromEvent(this.map, 'mousemove')
+			.pipe(map((mouseMove: any) => ({
+				lat: mouseMove.latlng.lat,
+				lng: mouseMove.latlng.lng
+			} as GeoPoint)));
+
+		this.mousemove$
+			.pipe(
+				flatMap((point: GeoPoint) => {
+					return (this.quakes && this.quakes.filter(quake => {
+						return quake.lat.toFixed(1) === point.lat.toFixed(1) && quake.lng.toFixed(1) === point.lng.toFixed(1);
+					}));
+				})
+			).subscribe(quake => this.openPopup(quake));
 	}
 
 	addCircle(quake: Quake) {
-		const circle = L.circle([quake.lat, quake.lng], quake.size);
-		circle.on('click', this.onCircleClick);
-		circle.addTo(this.layerGroup);
+		L.circle([quake.lat, quake.lng], quake.size).addTo(this.layerGroup);
 	}
 
 	onPeriodChanged(period: string) {
@@ -69,7 +91,10 @@ export class EarthquakeMapComponent implements AfterViewInit {
 		this.quakeService.load(period);
 	}
 
-	onCircleClick(ev) {
-		console.log('asdasdasdas', ev);
+	openPopup(quake: Quake) {
+		L.popup()
+			.setLatLng({ lat: quake.lat, lng: quake.lng })
+			.setContent('<p><h4>' + quake.place + '</h4><ul><li>' + quake.type + '</li><li>' + quake.time + '</li></ul></p>')
+			.openOn(this.map);
 	}
 }
