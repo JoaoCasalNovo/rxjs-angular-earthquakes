@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { fromEvent, Observable } from 'rxjs';
-import { share, filter, map, debounceTime } from 'rxjs/operators';
+import { fromEvent, Observable, Subscription, merge } from 'rxjs';
+import { share, throttleTime, filter, map, debounceTime } from 'rxjs/operators';
 
 const HEADER_HEIGHT = 60;
 
@@ -13,10 +13,12 @@ export class TryoutComponent implements OnInit, OnDestroy {
 	click$: Observable<Event>;
 	top$: Observable<Event>;
 	bottom$: Observable<Event>;
-
-	@ViewChild('tryOut', { read: ElementRef, static: false }) tryOut: ElementRef;
-
-	constructor() { }
+	topLeft$: Subscription;
+	topRight$: Subscription;
+	bottomLeft$: Subscription;
+	bottomRight$: Subscription;
+	map$: Subscription;
+	merged$: Subscription;
 
 	get tryOutHeight(): number {
 		return window.innerHeight;
@@ -42,37 +44,44 @@ export class TryoutComponent implements OnInit, OnDestroy {
 
 		// #### FILTER
 
-		// this.top$ = this.click$.pipe(
-		// 	filter((event: MouseEvent) => event.clientY > HEADER_HEIGHT && event.clientY < this.centerHeigth)
-		// );
+		this.top$ = this.click$.pipe(
+			filter((event: MouseEvent) => event.clientY > HEADER_HEIGHT && event.clientY < this.centerHeigth)
+		);
 
-		// this.bottom$ = this.click$.pipe(
-		// 	filter((event: MouseEvent) => event.clientY > this.centerHeigth)
-		// );
+		this.bottom$ = this.click$.pipe(
+			filter((event: MouseEvent) => event.clientY > this.centerHeigth)
+		);
 
 		// TOP LEFT Corner
-		// this.top$
+		// this.topleft$ = this.top$
 		// 	.pipe(filter((event: MouseEvent) => event.clientX <= this.centerWidth))
 		// 	.subscribe(() => console.log('TOP LEFT CORNER'));
 
 		// // TOP RIGHT Corner
-		// this.top$
+		// this.topRight$ = this.top$
 		// 	.pipe(filter((event: MouseEvent) => event.clientX > this.centerWidth))
 		// 	.subscribe(() => console.log('TOP RIGHT CORNER'));
+
 		// // BOTTOM LEFT Corner
-		// this.bottom$
+		// this.bottomleft$ = this.bottom$
 		// 	.pipe(filter((event: MouseEvent) => event.clientX <= this.centerWidth))
 		// 	.subscribe(() => console.log('BOTTOM LEFT CORNER'));
 
 		// // BOTTOM RIGHT Corner
-		// this.bottom$
+		// this.bottomRight$ = this.bottom$
 		// 	.pipe(filter((event: MouseEvent) => event.clientX > this.centerWidth))
 		// 	.subscribe(() => console.log('BOTTOM RIGHT CORNER'));
 
+		// Merged Streams
+		// const bR$ = this.bottom$.pipe(filter((event: MouseEvent) => event.clientX > this.centerWidth));
+		// const tL$ = this.top$.pipe(filter((event: MouseEvent) => event.clientX <= this.centerWidth));
+
+		// this.merged$ = merge(bR$, tL$).subscribe((event: MouseEvent) => console.log('Position', event));
+
 		// #### MAP
-		this.click$
+		this.map$ = this.click$
 			.pipe(
-				debounceTime(300),
+				debounceTime(200),
 				map((event: MouseEvent) => {
 					const zone = '';
 
@@ -83,9 +92,18 @@ export class TryoutComponent implements OnInit, OnDestroy {
 			).subscribe((zone: string) => {
 				console.log(`The Event Zone is ${zone}`);
 			});
+
+
+		// #### Keyboard
+		// fromEvent(document, 'keyup').subscribe((event: KeyboardEvent) => console.log('Keyboard UP Event', event));
 	}
 
 	ngOnDestroy() {
-
+		this.map$ && this.map$.unsubscribe();
+		this.topLeft$ && this.topLeft$.unsubscribe();
+		this.topRight$ && this.topRight$.unsubscribe();
+		this.bottomLeft$ && this.bottomLeft$.unsubscribe();
+		this.bottomRight$ && this.bottomRight$.unsubscribe();
+		this.merged$ && this.merged$.unsubscribe();
 	}
 }
