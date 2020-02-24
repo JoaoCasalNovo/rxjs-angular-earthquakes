@@ -14,7 +14,7 @@ fromEvent(document, 'click').subscribe(event => console.log(event));
 // Agora mudamos de tab e vejam a consola, continua a imprimir e já não queremos.
 // Então temos que fechar a stream, ou dizer que jã não queremos subscrever mais.
 
-// 3. Unsubscribe
+//  ########################## 3. Unsubscribe
 this.click$ = fromEvent(document, 'click').subscribe(event => console.log(event));
 
 this.click$.unsubscribe();
