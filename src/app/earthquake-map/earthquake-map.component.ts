@@ -3,8 +3,8 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { CONTINENTS_CENTER_POINT, DEFAULT_CONTINENT, Quake, PERIODS, DEFAULT_PERIOD, GeoPoint } from '../config/map.config';
 import * as L from 'leaflet';
 import { QuakeService } from '../services/quake.service';
-import { fromEvent, Observable, from } from 'rxjs';
-import { share, map, filter, flatMap } from 'rxjs/operators';
+import { fromEvent, Observable } from 'rxjs';
+import { map, flatMap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
 	selector: 'earthquake-map',
@@ -55,8 +55,10 @@ export class EarthquakeMapComponent implements AfterViewInit {
 	// EXERCICIO
 	subscribeQuakeService() {
 		this.quakeService.quakes
+			.pipe(distinctUntilChanged())
 			.subscribe((quakes: Quake[]) => {
 				this.quakes = quakes;
+				this.layerGroup.clearLayers();
 				quakes.forEach(quake => this.addCircle(quake));
 			});
 
@@ -86,7 +88,6 @@ export class EarthquakeMapComponent implements AfterViewInit {
 	}
 
 	onPeriodChanged(period: string) {
-		this.layerGroup.clearLayers();
 		this.selectedPeriod = period;
 		this.quakeService.load(period);
 	}
@@ -94,7 +95,7 @@ export class EarthquakeMapComponent implements AfterViewInit {
 	openPopup(quake: Quake) {
 		L.popup()
 			.setLatLng({ lat: quake.lat, lng: quake.lng })
-			.setContent('<p><h4>' + quake.place + '</h4><ul><li>' + quake.type + '</li><li>' + quake.time + '</li></ul></p>')
+			.setContent(`<p><h4>${quake.place}</h4><ul><li>${quake.size / 20000}</li><li>${quake.type}</li><li>${quake.time}</li></ul></p>`)
 			.openOn(this.map);
 	}
 }

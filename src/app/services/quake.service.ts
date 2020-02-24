@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Quake, DEFAULT_PERIOD } from '../config/map.config';
-import { BehaviorSubject, from, zip, forkJoin, of, Subject } from 'rxjs';
-import { flatMap, map, merge, combineAll, mergeAll } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
 
 @Injectable()
 export class QuakeService {
@@ -19,23 +19,20 @@ export class QuakeService {
 
 	// EXERCICIO
 	load(period: string = DEFAULT_PERIOD) {
-		this.dataStore.quakes = [];
 		this.http.get(`${this.baseUrl}/${period}.geojson`)
 			.pipe(
-				flatMap((data: any) => from(data.features)),
-				map((quake: any) => ({
+				flatMap((data: any) => of(data.features)),
+				map(quakes => quakes.map((quake: any) => ({
 					lat: quake.geometry.coordinates[1],
 					lng: quake.geometry.coordinates[0],
 					size: quake.properties.mag * 20000,
 					place: quake.properties.place,
 					type: quake.properties.type,
 					time: quake.properties.time
-				} as Quake))
+				} as Quake)))
 			)
 			.subscribe(
-				quake => {
-					this.dataStore.quakes.push(quake);
-				},
+				(quakes: Quake[]) => this.dataStore.quakes = quakes,
 				(err) => console.error('error: ', err),
 				() => {
 					this.quakes$.next(Object.assign({}, this.dataStore).quakes);
