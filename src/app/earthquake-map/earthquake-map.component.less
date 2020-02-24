@@ -1,0 +1,24 @@
+@import "~leaflet/dist/leaflet.css";
+
+.earthquake-map-container {
+	height: 100%;
+	width: 100%;
+	
+	.map-frame {
+		position: relative;
+		height: 100%;
+	}
+
+	.select-period {
+		position: absolute;
+		margin: 15px;
+		height: 30px;
+		right: 0;
+		z-index: 1000;
+		cursor: pointer;
+	}
+
+	#map {
+		height: 100%;
+	}
+}

@@ -1,0 +1,15 @@
+<div class="earthquake-map-container">
+    <select
+        class="select-period"
+        (change)="onPeriodChanged($event.target.value)">
+        <option
+            *ngFor="let item of periods | keyvalue"
+            [selected]="item.key === selectedPeriod"
+            [value]="item.key">
+            {{ item.value }}
+        </option>
+    </select>
+    <div class="map-frame">
+        <div id="map"></div>
+    </div>
+</div>

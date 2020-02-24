@@ -1,0 +1,36 @@
+.earthquake-viewer-page {
+	height: 100%;
+	width: 100%;
+
+	display: flex;
+    flex-direction: column;
+}
+
+.header {
+	height: 60px;
+	width: 100%;
+	background: linear-gradient(270deg, #48367d 0%, #241842 100%);
+	padding: 0px 24px;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+
+	.label {
+		color: white;
+		font-family: 'Lacquer', sans-serif;
+		font-size: 24px;
+		margin-right: 20px;
+	}
+
+	.right-side,
+	.left-side {
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
+}
+
+.visualiser {
+	flex: 1 1 auto;
+}
